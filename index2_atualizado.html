@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teenstudio Portal</title>
+    <style>
+        :root {
+            --bg-color: #0b0a0f; 
+            --card-bg: #121118;   
+            --primary-color: #7c3aed;
+            --primary-hover: #6d28d9;
+            --text-dark: #1f2937;
+            --text-light: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-color: #1f2937;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --accent-color: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Versículo Bíblico Superior */
+        .bible-verse {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 800px;
+            margin: 24px auto 0 auto;
+            padding: 12px 24px;
+            border-bottom: 1px dashed rgba(124, 58, 237, 0.2);
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .bible-verse strong {
+            color: var(--primary-color);
+            font-style: normal;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 1300px;
+            box-sizing: border-box;
+            padding: 20px 24px 40px 24px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        #welcome-screen {
+            justify-content: flex-start;
+            padding-top: 40px; 
+            min-height: auto;
+        }
+
+        .welcome-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            max-width: 440px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        .welcome-card h1 {
+            color: var(--text-light);
+            margin-bottom: 8px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        .welcome-card p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+        }
+
+        .btn-group-welcome {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        input[type="text"], input[type="password"], select, textarea, input[type="file"], input[type="date"] {
+            width: 100%;
+            padding: 12px 14px;
+            margin: 8px 0;
+            background: #18171f;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]::placeholder, textarea::placeholder {
+            color: #555;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #1c1a24;
+            border-color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        /* Cabeçalho */
+        .calendar-header-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+        }
+
+        .welcome-user-title {
+            font-size: 1.6rem; 
+            font-weight: 800; 
+            color: var(--text-light);
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: -0.025em;
+        }
+
+        .role-subtitle {
+            font-size: 0.85rem; 
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 6px;
+            background: #121118;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .calendar-layout {
+            display: flex;
+            gap: 24px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        .months-list-container {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            width: 100%;
+        }
+
+        .month-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .month-title {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+        }
+
+        .personal-sidebar {
+            flex: 1;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            position: sticky;
+            top: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .task-card {
+            background: #18171f;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .task-meta-preview {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: -4px;
+        }
+
+        .task-card-actions {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .task-card-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.75rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .day-name {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .day {
+            background-color: #18171f;
+            border: 1px solid var(--border-color);
+            height: 110px; /* Altura fixa garantindo que todas as células tenham tamanho idêntico e não desconfigurem */
+            max-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Mantém número do dia no topo */
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            overflow: hidden; /* Impede transbordamento que deforma o grid */
+            position: relative;
+        }
+
+        .day:hover {
+            background-color: #1e1c26;
+            border-color: var(--primary-color);
+        }
+
+        .day-number {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .day-content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 2px;
+            overflow-y: auto; /* Permite rolagem suave caso haja muitas marcações ou eventos no mesmo dia */
+            max-height: 70px; /* Limita a área interna de eventos para não esticar a div do dia */
+            width: 100%;
+        }
+
+        /* Barra de rolagem discreta e estilizada para as células do dia */
+        .day-content-area::-webkit-scrollbar {
+            width: 3px;
+        }
+        .day-content-area::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.4);
+            border-radius: 3px;
+        }
+
+        .day-badge-item {
+            font-size: 0.65rem;
+            background: rgba(124, 58, 237, 0.1);
+            color: #c084fc;
+            padding: 2px 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%; /* Garante que o texto se limite ao tamanho do bloco do dia */
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .day-badge-item.completed {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .badge {
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border-radius: 8px;
+            padding: 2px 6px;
+            margin-left: 6px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .admin-section {
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-sizing: border-box;
+        }
+
+        .admin-section h3 {
+            margin-top: 0;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .admin-users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .user-selection-btn {
+            background: #18171f;
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .user-selection-btn:hover, .user-selection-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+        }
+
+        .box-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .request-card-box {
+            background: #18171f;
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .day-tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 16px 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .day-task-item {
+            background: #18171f;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-task-item.completed {
+            border-left-color: var(--success-color);
+            background: #111e17;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn-action-small {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            background: #1c1a24;
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-action-small:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .badge-owner {
+            font-size: 0.7rem;
+            background: #1c1a24;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+
+        /* WIDGET DE CHAT PROFISSIONAL */
+        .chat-widget-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .chat-trigger-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 24px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .chat-trigger-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .chat-badge {
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -6px;
+            right: -2px;
+            box-shadow: 0 0 0 3px var(--bg-color);
+        }
+
+        .chat-box {
+            display: none;
+            width: 360px;
+            height: 480px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .chat-header {
+            background: #1c1a24;
+            color: var(--text-light);
+            padding: 16px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-channels {
+            display: flex;
+            background: #18171f;
+            border-bottom: 1px solid var(--border-color);
+            padding: 6px;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .channel-tab {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            text-align: center;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .channel-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .channel-unread-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--danger-color);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #0d0c12;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: var(--text-light);
+        }
+
+        .chat-bubble.sent {
+            align-self: flex-end;
+            background: var(--primary-color);
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-bubble.received {
+            align-self: flex-start;
+            background: #18171f;
+            border-bottom-left-radius: 2px;
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-bubble-meta {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .chat-input-area {
+            padding: 12px;
+            background: #18171f;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            background: #121118;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .chat-input-area button {
+            padding: 10px 16px;
+            font-size: 0.85rem;
+        }
+
+        /* Estilos da Tela de Status */
+        .status-container-screen {
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+        }
+
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .status-table th, .status-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .status-table th {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.completed {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-badge.pending {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bible-verse">
+        "se o dom é servir, sirva; se é ensinar, ensine; se é encorajar, que assim o faça; se é contribuir, que contribua generosamente; se é exercer liderança, que a exerça com dedicação; se é mostrar misericórdia, que o faça com alegria." 
+        <br><strong>Romanos 12:7-8 NVI</strong>
+    </div>
+
+    <div id="welcome-screen" class="screen active">
+        <div class="welcome-card">
+            <h1>Teenstudio</h1>
+            <p>Selecione a modalidade de acesso ao painel organizacional</p>
+            <div class="btn-group-welcome">
+                <button onclick="requestParticipantAccess()">Acesso Participante</button>
+                <button class="btn-secondary" onclick="loginAdmin()">Administração</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="calendar-screen" class="screen">
+        <div class="calendar-header-wrapper">
+            <div>
+                <button class="btn-secondary" onclick="goBackToWelcome()" style="margin-bottom: 12px; padding: 8px 16px;">Desconectar</button>
+                <span id="user-display-id" class="welcome-user-title"></span>
+                <span id="role-title" class="role-subtitle">Painel</span>
+            </div>
+            
+            <div class="header-actions">
+                <div class="tabs-container" id="participant-tabs">
+                    <button id="tab-geral" class="tab-btn active" onclick="switchTab('geral')">Geral</button>
+                    <button id="tab-pessoal" class="tab-btn" onclick="switchTab('pessoal')">Pessoal</button>
+                    <button id="tab-status" class="tab-btn" onclick="switchTab('status')">Status</button>
+                </div>
+
+                <div id="admin-actions" style="display: none; display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-secondary" onclick="toggleAdminPanel('requests')">
+                        Solicitações <span id="req-badge" class="badge" style="display: none;">0</span>
+                    </button>
+                    <button class="btn-secondary" onclick="toggleAdminPanel('create-task')">Adicionar Conteúdo</button>
+                    <button class="btn-secondary" onclick="toggleAdminPanel('create-recording')">Marcar Gravação</button>
+                    <button class="btn-secondary" onclick="toggleAdminPanel('tasks')">Conteúdos por Participante</button>
+                    <button class="btn-secondary" onclick="toggleAdminPanel('status-admin')">Ver Status Geral</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-create-task-area" class="admin-section" style="display: none;">
+            <h3>Criar Novo Conteúdo Global</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+                Esse conteúdo aparecerá na barra lateral "Conteúdos Rápidos" de todos os participantes. Assim que assumido por alguém, ele será agendado automaticamente sem precisar de aprovação e some para os demais.
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--text-secondary);">Título do Conteúdo *</label>
+                    <input type="text" id="new-global-task-title" placeholder="Ex: Produzir Vídeo de Quarta-feira">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--text-secondary);">Link / Apoio (Opcional)</label>
+                    <input type="text" id="new-global-task-link" placeholder="https://exemplo.com">
+                </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <label style="font-size: 0.8rem; color: var(--text-secondary);">Descrição detalhada (Opcional)</label>
+                <textarea id="new-global-task-desc" rows="3" placeholder="Insira as instruções detalhadas aqui..."></textarea>
+            </div>
+            <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8rem; color: var(--text-secondary);">Data Limite de Entrega (Opcional)</label>
+                    <input type="date" id="new-global-task-deadline">
+                </div>
+                <button onclick="publishGlobalTask()" style="margin-top: 24px; padding: 12px 24px;">Publicar Conteúdo</button>
+            </div>
+        </div>
+
+        <div id="admin-create-recording-area" class="admin-section" style="display: none;">
+            <h3>Marcar Dia de Gravação</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+                Agende uma data de gravação. Ela será adicionada automaticamente ao calendário de todos os IDs e do administrador.
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--text-secondary);">Título da Gravação *</label>
+                    <input type="text" id="recording-title" placeholder="Ex: Gravação Geral de Podcasts">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--text-secondary);">Data da Gravação *</label>
+                    <input type="date" id="recording-date">
+                </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <label style="font-size: 0.8rem; color: var(--text-secondary);">Detalhes adicionais (Opcional)</label>
+                <textarea id="recording-desc" rows="2" placeholder="Ex: Estúdio A, levar camisetas pretas..."></textarea>
+            </div>
+            <button onclick="publishRecordingDay()" style="margin-top: 14px; padding: 12px 24px;">Agendar Gravação</button>
+        </div>
+
+        <div id="admin-requests-area" class="admin-section" style="display: none;">
+            <h3>Solicitações Pendentes</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">Controle de novos acessos e agendamentos propostos por participantes (apenas conteúdos personalizados):</p>
+            
+            <h4 style="margin: 20px 0 10px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; color: white; font-size: 0.95rem;">Acessos de Participantes</h4>
+            <div id="admin-access-requests" class="box-container">
+                <p style="color: var(--text-secondary); font-size: 0.85rem;">Sem solicitações de acesso pendentes.</p>
+            </div>
+
+            <h4 style="margin: 30px 0 10px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; color: white; font-size: 0.95rem;">Agendamentos Solicitados pelos Participantes (Personalizados)</h4>
+            <div id="admin-event-requests" class="box-container">
+                <p style="color: var(--text-secondary); font-size: 0.85rem;">Sem solicitações de conteúdos pendentes.</p>
+            </div>
+        </div>
+
+        <div id="admin-panel-area" class="admin-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Calendários de Participantes</h3>
+                <button class="btn-secondary" onclick="toggleAdminPanel('tasks')">Fechar</button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Selecione um participante ativo abaixo para analisar seu cronograma individual:</p>
+            
+            <div id="admin-users-list" class="admin-users-grid">
+                <p style="color: var(--text-secondary);">Nenhum participante cadastrado ou ativo.</p>
+            </div>
+        </div>
+
+        <div id="status-screen-area" class="status-container-screen" style="display: none; margin-bottom: 24px;">
+            <h3 id="status-screen-title">Status de Conteúdos</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">Consulte abaixo a lista de todos os conteúdos assumidos e suas respectivas situações de entrega:</p>
+            <table class="status-table">
+                <thead>
+                    <tr>
+                        <th>Conteúdo</th>
+                        <th>Responsável</th>
+                        <th>Agendamento</th>
+                        <th>Situação</th>
+                        <th>Anexo</th>
+                    </tr>
+                </thead>
+                <tbody id="status-table-body">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="calendar-layout" id="main-calendar-layout">
+            <div class="months-list-container" id="months-list-container"></div>
+
+            <div class="personal-sidebar" id="personal-sidebar" style="display: none;">
+                <h3 style="color: var(--text-light); margin-top: 0; font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; font-weight: 700;">Conteúdos Rápidos</h3>
+                
+                <div id="global-tasks-sidebar-list"></div>
+
+                <div class="task-card" style="border-style: dashed; background: transparent; margin-top: 16px;">
+                    <span class="task-title" style="color: var(--text-secondary);">Conteúdo Personalizado</span>
+                    <button style="background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); width: 100%;" onclick="acceptCustomTaskPrompt()">Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="day-view-modal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="day-view-title" style="margin:0; font-size: 1.1rem;">Conteúdos do Dia</h3>
+                <button onclick="openCreateModal()" style="padding: 6px 12px; font-size: 0.8rem;">+ Novo Conteúdo</button>
+            </div>
+            
+            <div id="day-tasks-list" class="day-tasks-list"></div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn-secondary" onclick="closeDayViewModal()" style="padding: 8px 16px;">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="task-details-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="detail-task-title" style="margin-top:0;">Título do Conteúdo</h3>
+            <p id="detail-task-desc" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.4; margin: 16px 0;">Sem descrição disponível.</p>
+            
+            <div id="detail-task-meta" style="font-size: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; flex-direction: column; gap: 6px;"></div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                <button class="btn-secondary" onclick="closeTaskDetailsModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="event-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title" style="margin-top: 0; font-size: 1.1rem;">Adicionar Evento</h3>
+            <label for="event-type" style="font-size: 0.85rem; color: var(--text-secondary);">Tipo de registro:</label>
+            <select id="event-type" onchange="toggleInputType()">
+                <option value="text">Texto</option>
+                <option value="video">Vídeo / Link</option>
+            </select>
+
+            <div id="text-input-group">
+                <label for="event-text" style="font-size: 0.85rem; color: var(--text-secondary);">Texto informativo:</label>
+                <textarea id="event-text" rows="3" placeholder="Insira a descrição..."></textarea>
+            </div>
+
+            <div id="video-input-group" style="display: none;">
+                <label for="event-video" style="font-size: 0.85rem; color: var(--text-secondary);">Endereço de vídeo / link:</label>
+                <input type="url" id="event-video" placeholder="https://">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+                <button class="btn-secondary" onclick="closeModal()">Voltar</button>
+                <button onclick="submitEvent()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="attachment-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="font-size: 1.1rem;">Concluir Atividade</h3>
+            <p style="font-size: 0.85rem; margin-bottom: 16px; color: var(--text-secondary);">Anexe o arquivo comprobatório correspondente:</p>
+            
+            <label for="task-file" style="font-size: 0.8rem; color: var(--text-secondary);">Selecionar Arquivo:</label>
+            <input type="file" id="task-file">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+                <button class="btn-secondary" onclick="closeAttachmentModal()">Cancelar</button>
+                <button onclick="submitTaskCompletion()">Finalizar e Entregar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-widget-container" id="chat-widget" style="display: none;">
+        <div class="chat-box" id="chat-box">
+            <div class="chat-header">
+                <span>Chat Corporativo</span>
+                <button onclick="toggleChatBox()" style="background:none; border:none; color:var(--text-secondary); font-size:1.4rem; cursor:pointer;">×</button>
+            </div>
+            <div class="chat-channels" id="chat-channels-bar"></div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-message-input" placeholder="Escreva uma mensagem..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()">Enviar</button>
+            </div>
+        </div>
+        <button class="chat-trigger-btn" onclick="toggleChatBox()">
+            <span id="chat-unread-count" class="chat-badge" style="display: none;">0</span>
+            Chat
+        </button>
+    </div>
+
+    <script>
+        let currentRole = 'participant'; 
+        let currentTab = 'geral'; 
+        let userPersonalId = 'admin'; 
+        let selectedMonth = '';
+        let selectedDay = null;
+        let adminViewingUser = null; 
+
+        let activeCompletingTaskId = null;
+
+        // Lista de Conteúdos Avançados Criados pelo Admin
+        let poolGlobalTasks = [];
+
+        // Canais do Chat & Controle de Mensagens Não Lidas
+        let chatMessagesList = []; 
+        let activeChatChannel = 'todos'; 
+        let unreadCounts = { 'todos': 0 }; 
+
+        const meses = [
+            { name: "Janeiro", days: 31 }, { name: "Fevereiro", days: 28 }, 
+            { name: "Março", days: 31 }, { name: "Abril", days: 30 }, 
+            { name: "Maio", days: 31 }, { name: "Junho", days: 30 },
+            { name: "Julho", days: 31 }, { name: "Agosto", days: 31 }, 
+            { name: "Setembro", days: 30 }, { name: "Outubro", days: 31 }, 
+            { name: "Novembro", days: 30 }, { name: "Dezembro", days: 31 }
+        ];
+
+        let globalTasksList = []; 
+        let approvedIds = new Set(); 
+        let pendingIdRequests = []; 
+        let pendingEventRequests = []; 
+
+        function getColorForUser(userId) {
+            if (userId === 'admin') return '#7c3aed';
+            if (userId === 'Gravação') return '#ef4444'; // Vermelho para dia de gravação
+            let hash = 0;
+            for (let i = 0; i < userId.length; i++) {
+                hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+            return "#" + "00000".substring(0, 6 - c.length) + c;
+        }
+
+        function copyToClipboard(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert("Link copiado!");
+            }).catch(err => {
+                alert("Falha ao copiar.");
+            });
+        }
+
+        function requestParticipantAccess() {
+            let idInput = prompt("Digite seu ID de acesso (precisa terminar com '@'):");
+            if (!idInput) return;
+            idInput = idInput.trim();
+
+            if (!idInput.endsWith('@') || idInput.length < 2) {
+                alert("O identificador precisa terminar com '@'.");
+                return;
+            }
+
+            if (approvedIds.has(idInput)) {
+                userPersonalId = idInput;
+                enterParticipantCalendar();
+            } else {
+                if (pendingIdRequests.includes(idInput)) {
+                    alert("Acesso pendente de análise.");
+                } else {
+                    pendingIdRequests.push(idInput);
+                    alert("Identificador enviado para análise.");
+                }
+            }
+        }
+
+        function enterParticipantCalendar() {
+            currentRole = 'participant';
+            document.getElementById('role-title').innerText = "Painel Participante";
+            
+            const userLabel = document.getElementById('user-display-id');
+            userLabel.innerText = `Bem-Vindo, ${userPersonalId}`;
+            userLabel.style.display = 'block';
+
+            document.getElementById('participant-tabs').style.display = 'flex';
+            document.getElementById('admin-actions').style.display = 'none';
+            document.getElementById('admin-requests-area').style.display = 'none';
+            document.getElementById('admin-panel-area').style.display = 'none';
+            document.getElementById('admin-create-task-area').style.display = 'none';
+            document.getElementById('admin-create-recording-area').style.display = 'none';
+            document.getElementById('status-screen-area').style.display = 'none';
+            document.getElementById('main-calendar-layout').style.display = 'flex';
+            
+            document.getElementById('chat-widget').style.display = 'flex';
+            activeChatChannel = 'todos';
+            
+            if (!(userPersonalId in unreadCounts)) {
+                unreadCounts[userPersonalId] = 0;
+            }
+            if (!('todos' in unreadCounts)) {
+                unreadCounts['todos'] = 0;
+            }
+
+            setupChatChannels();
+            updateChatGlobalBadge();
+            renderSidebarTasks();
+
+            switchTab('geral');
+            buildYearlyCalendar();
+            changeScreen('calendar-screen');
+        }
+
+        function loginAdmin() {
+            const password = prompt("Credenciais:");
+            if (password === 'teenstudio26') {
+                currentRole = 'admin';
+                userPersonalId = 'admin';
+                adminViewingUser = null; 
+
+                document.getElementById('role-title').innerText = "Painel Geral";
+                
+                const userLabel = document.getElementById('user-display-id');
+                userLabel.innerText = "Bem-Vindo, Admin";
+                userLabel.style.display = 'block';
+
+                document.getElementById('participant-tabs').style.display = 'none'; 
+                document.getElementById('personal-sidebar').style.display = 'none';
+                document.getElementById('admin-actions').style.display = 'flex';
+                document.getElementById('status-screen-area').style.display = 'none';
+                document.getElementById('main-calendar-layout').style.display = 'flex';
+                
+                document.getElementById('chat-widget').style.display = 'flex';
+                activeChatChannel = 'todos';
+
+                if (!('todos' in unreadCounts)) {
+                    unreadCounts['todos'] = 0;
+                }
+
+                setupChatChannels();
+                updateChatGlobalBadge();
+
+                updateBadges();
+                buildYearlyCalendar();
+                changeScreen('calendar-screen');
+            } else {
+                alert("Senha incorreta.");
+            }
+        }
+
+        function changeScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goBackToWelcome() {
+            document.getElementById('chat-widget').style.display = 'none';
+            document.getElementById('chat-box').style.display = 'none';
+            changeScreen('welcome-screen');
+        }
+
+        function toggleAdminPanel(type) {
+            const reqArea = document.getElementById('admin-requests-area');
+            const taskArea = document.getElementById('admin-panel-area');
+            const createTaskArea = document.getElementById('admin-create-task-area');
+            const createRecordingArea = document.getElementById('admin-create-recording-area');
+            const statusArea = document.getElementById('status-screen-area');
+            const calendarLayout = document.getElementById('main-calendar-layout');
+
+            reqArea.style.display = 'none';
+            taskArea.style.display = 'none';
+            createTaskArea.style.display = 'none';
+            createRecordingArea.style.display = 'none';
+            statusArea.style.display = 'none';
+            calendarLayout.style.display = 'flex';
+
+            if (type === 'requests') {
+                reqArea.style.display = 'block';
+                updateRequestsPanel();
+            } else if (type === 'tasks') {
+                taskArea.style.display = 'block';
+                updateAdminPanel();
+            } else if (type === 'create-task') {
+                createTaskArea.style.display = 'block';
+            } else if (type === 'create-recording') {
+                createRecordingArea.style.display = 'block';
+            } else if (type === 'status-admin') {
+                calendarLayout.style.display = 'none';
+                statusArea.style.display = 'block';
+                renderStatusScreen();
+            }
+        }
+
+        // Publicar Conteúdo com Descrição, Link e Prazo
+        function publishGlobalTask() {
+            const titleInput = document.getElementById('new-global-task-title');
+            const linkInput = document.getElementById('new-global-task-link');
+            const descInput = document.getElementById('new-global-task-desc');
+            const deadlineInput = document.getElementById('new-global-task-deadline');
+
+            const title = titleInput.value.trim();
+            if (!title) {
+                alert("O título do conteúdo é obrigatório!");
+                return;
+            }
+
+            poolGlobalTasks.push({
+                id: Date.now(),
+                title: title,
+                description: descInput.value.trim() || "Sem descrição adicional.",
+                link: linkInput.value.trim() || null,
+                deadline: deadlineInput.value || null,
+                isGlobalAdminCreated: true // Identificador para não precisar aprovar ao aceitar
+            });
+
+            titleInput.value = '';
+            linkInput.value = '';
+            descInput.value = '';
+            deadlineInput.value = '';
+
+            alert("Conteúdo global publicado com sucesso!");
+            renderSidebarTasks();
+        }
+
+        // Publicar Dia de Gravação para todos os IDs
+        function publishRecordingDay() {
+            const titleInput = document.getElementById('recording-title');
+            const dateInput = document.getElementById('recording-date');
+            const descInput = document.getElementById('recording-desc');
+
+            const title = titleInput.value.trim();
+            const rawDate = dateInput.value;
+
+            if (!title || !rawDate) {
+                alert("Título e Data da gravação são obrigatórios!");
+                return;
+            }
+
+            // Ex: 2026-07-20 -> ["2026", "07", "20"]
+            const parts = rawDate.split('-');
+            const mesIndex = parseInt(parts[1]) - 1;
+            const diaNum = parseInt(parts[2]);
+            const mesNome = meses[mesIndex].name;
+
+            const dateKey = `${mesNome}-${diaNum}`;
+
+            // Adiciona ao calendário global para que todos visualizem
+            globalTasksList.push({
+                id: Date.now(),
+                dateKey: dateKey,
+                type: 'text',
+                content: `🎥 GRAVAÇÃO: ${title}` + (descInput.value.trim() ? ` (${descInput.value.trim()})` : ''),
+                color: '#ef4444', // Vermelho distintivo para Gravação
+                owner: 'Gravação',
+                completed: false,
+                isRecording: true
+            });
+
+            titleInput.value = '';
+            dateInput.value = '';
+            descInput.value = '';
+
+            alert("Dia de gravação agendado com sucesso em todos os cronogramas!");
+            buildYearlyCalendar();
+        }
+
+        // Renderização Dinâmica com Botões Separados para Ver e Aceitar
+        function renderSidebarTasks() {
+            const container = document.getElementById('global-tasks-sidebar-list');
+            container.innerHTML = '';
+
+            if (poolGlobalTasks.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-secondary); font-size:0.8rem; text-align:center; padding: 12px 0;">Nenhum conteúdo global disponível.</p>';
+                return;
+            }
+
+            poolGlobalTasks.forEach(task => {
+                const card = document.createElement('div');
+                card.className = 'task-card';
+
+                let metaInfo = '';
+                if (task.deadline) {
+                    const parts = task.deadline.split('-');
+                    metaInfo = `<div class="task-meta-preview">Entrega até: ${parts[2]}/${parts[1]}/${parts[0]}</div>`;
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <span class="task-title">${task.title}</span>
+                        ${metaInfo}
+                    </div>
+                    <div class="task-card-actions">
+                        <button class="btn-secondary" onclick="viewTaskDetails(${task.id})">Visualizar</button>
+                        <button onclick="acceptTaskPrompt('${task.title}', ${task.id}, ${task.isGlobalAdminCreated})">Aceitar</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Abre modal mostrando detalhes de um conteúdo
+        function viewTaskDetails(taskId) {
+            const task = poolGlobalTasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            document.getElementById('detail-task-title').innerText = task.title;
+            document.getElementById('detail-task-desc').innerText = task.description;
+
+            const metaContainer = document.getElementById('detail-task-meta');
+            metaContainer.innerHTML = '';
+
+            if (task.link) {
+                metaContainer.innerHTML += `
+                    <div>
+                        <strong>Link de Apoio:</strong> 
+                        <a href="${task.link}" target="_blank" style="color: var(--primary-color); word-break: break-all;">${task.link}</a>
+                    </div>
+                `;
+            }
+            if (task.deadline) {
+                const parts = task.deadline.split('-');
+                metaContainer.innerHTML += `
+                    <div>
+                        <strong>Data sugerida de entrega:</strong> ${parts[2]}/${parts[1]}/${parts[0]}
+                    </div>
+                `;
+            }
+
+            document.getElementById('task-details-modal').style.display = 'flex';
+        }
+
+        function closeTaskDetailsModal() {
+            document.getElementById('task-details-modal').style.display = 'none';
+        }
+
+        function buildYearlyCalendar() {
+            const container = document.getElementById('months-list-container');
+            if(!container) return;
+            container.innerHTML = '';
+
+            meses.forEach(mes => {
+                const section = document.createElement('div');
+                section.className = 'month-section';
+
+                const title = document.createElement('h3');
+                title.className = 'month-title';
+                title.innerText = mes.name;
+                section.appendChild(title);
+
+                const gridHeader = document.createElement('div');
+                gridHeader.className = 'grid';
+                gridHeader.innerHTML = `
+                    <div class="day-name">Dom</div><div class="day-name">Seg</div>
+                    <div class="day-name">Ter</div><div class="day-name">Qua</div>
+                    <div class="day-name">Qui</div><div class="day-name">Sex</div>
+                    <div class="day-name">Sáb</div>
+                `;
+                section.appendChild(gridHeader);
+
+                const daysGrid = document.createElement('div');
+                daysGrid.className = 'grid';
+                daysGrid.style.marginTop = '10px';
+
+                for (let i = 1; i <= mes.days; i++) {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'day';
+
+                    const key = `${mes.name}-${i}`;
+                    
+                    let filteredEvents = [];
+                    if (currentRole === 'admin') {
+                        if (adminViewingUser) {
+                            filteredEvents = globalTasksList.filter(t => t.dateKey === key && (t.owner === adminViewingUser || t.owner === 'Gravação'));
+                        } else {
+                            filteredEvents = globalTasksList.filter(t => t.dateKey === key);
+                        }
+                    } else {
+                        if (currentTab === 'pessoal') {
+                            filteredEvents = globalTasksList.filter(t => t.dateKey === key && (t.owner === userPersonalId || t.owner === 'Gravação'));
+                        } else {
+                            filteredEvents = globalTasksList.filter(t => t.dateKey === key);
+                        }
+                    }
+
+                    let badgesHTML = '';
+                    if (filteredEvents.length > 0) {
+                        dayDiv.style.border = `1px solid ${filteredEvents[0].color}`;
+                        filteredEvents.slice(0, 2).forEach(evt => {
+                            const label = evt.type === 'video' ? 'Link' : evt.content;
+                            const completedClass = evt.completed ? 'completed' : '';
+                            badgesHTML += `<div class="day-badge-item ${completedClass}" style="border-left: 2px solid ${evt.color}">${label}</div>`;
+                        });
+                        if (filteredEvents.length > 2) {
+                            badgesHTML += `<div class="day-badge-item" style="font-size:0.6rem; color:#7c3aed;">+ ${filteredEvents.length - 2}</div>`;
+                        }
+                    }
+
+                    dayDiv.innerHTML = `
+                        <span class="day-number">${i}</span>
+                        <div class="day-content-area">${badgesHTML}</div>
+                    `;
+                    dayDiv.onclick = () => openDayViewModal(mes.name, i);
+                    daysGrid.appendChild(dayDiv);
+                }
+
+                section.appendChild(daysGrid);
+                container.appendChild(section);
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const sidebar = document.getElementById('personal-sidebar');
+            const statusArea = document.getElementById('status-screen-area');
+            const calendarLayout = document.getElementById('main-calendar-layout');
+
+            document.getElementById('tab-geral').classList.toggle('active', tab === 'geral');
+            document.getElementById('tab-pessoal').classList.toggle('active', tab === 'pessoal');
+            document.getElementById('tab-status').classList.toggle('active', tab === 'status');
+
+            statusArea.style.display = 'none';
+            calendarLayout.style.display = 'flex';
+
+            if (tab === 'pessoal') {
+                sidebar.style.display = 'block';
+                renderSidebarTasks();
+                buildYearlyCalendar();
+            } else if (tab === 'status') {
+                sidebar.style.display = 'none';
+                calendarLayout.style.display = 'none';
+                statusArea.style.display = 'block';
+                renderStatusScreen();
+            } else {
+                sidebar.style.display = 'none';
+                buildYearlyCalendar();
+            }
+        }
+
+        // Renderizar a tela de status dos conteúdos assumidos
+        function renderStatusScreen() {
+            const tableBody = document.getElementById('status-table-body');
+            tableBody.innerHTML = '';
+
+            let contentsToRender = [];
+            // Se for participante, mostra apenas as dele. Se for admin, mostra todas de todos.
+            if (currentRole === 'admin') {
+                contentsToRender = globalTasksList.filter(t => !t.isRecording);
+            } else {
+                contentsToRender = globalTasksList.filter(t => t.owner === userPersonalId && !t.isRecording);
+            }
+
+            if (contentsToRender.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">Nenhum conteúdo assumido até o momento.</td></tr>`;
+                return;
+            }
+
+            contentsToRender.forEach(item => {
+                const tr = document.createElement('tr');
+                const badgeClass = item.completed ? 'status-badge completed' : 'status-badge pending';
+                const badgeText = item.completed ? 'Concluído' : 'Pendente';
+                
+                let attachmentHTML = 'Nenhum';
+                if (item.attachment) {
+                    attachmentHTML = `<button class="btn-action-small" onclick="downloadAttachment('${item.attachment.name}', '${item.attachment.data}')">Baixar Anexo</button>`;
+                }
+
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${item.content}</td>
+                    <td><span class="badge-owner">${item.owner}</span></td>
+                    <td>${item.dateKey}</td>
+                    <td><span class="${badgeClass}">${badgeText}</span></td>
+                    <td>${attachmentHTML}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function openDayViewModal(month, day) {
+            selectedMonth = month;
+            selectedDay = day;
+            document.getElementById('day-view-title').innerText = `${month} - Dia ${day}`;
+            
+            const listContainer = document.getElementById('day-tasks-list');
+            listContainer.innerHTML = '';
+
+            const key = `${month}-${day}`;
+            
+            let filteredEvents = [];
+            if (currentRole === 'admin') {
+                if (adminViewingUser) {
+                    filteredEvents = globalTasksList.filter(t => t.dateKey === key && (t.owner === adminViewingUser || t.owner === 'Gravação'));
+                } else {
+                    filteredEvents = globalTasksList.filter(t => t.dateKey === key);
+                }
+            } else {
+                if (currentTab === 'pessoal') {
+                    filteredEvents = globalTasksList.filter(t => t.dateKey === key && (t.owner === userPersonalId || t.owner === 'Gravação'));
+                } else {
+                    filteredEvents = globalTasksList.filter(t => t.dateKey === key);
+                }
+            }
+
+            if (filteredEvents.length === 0) {
+                listContainer.innerHTML = '<p style="color: var(--text-secondary); text-align:center; padding: 20px 0; font-size: 0.85rem;">Nenhuma atividade agendada.</p>';
+            } else {
+                filteredEvents.forEach(evt => {
+                    const item = document.createElement('div');
+                    item.className = `day-task-item ${evt.completed ? 'completed' : ''}`;
+                    item.style.borderLeftColor = evt.color;
+                    
+                    let contentHTML = `
+                        <div>
+                            <strong>${evt.type === 'video' ? 'Link' : 'Texto'}:</strong> ${evt.content} 
+                            <span class="badge-owner">${evt.owner}</span>
+                        </div>
+                    `;
+                    
+                    let actionButtons = '';
+                    
+                    if (evt.type === 'video') {
+                        actionButtons += `<button class="btn-action-small" onclick="copyToClipboard('${evt.content}')">Copiar Link</button>`;
+                    }
+
+                    if (userPersonalId === evt.owner || currentRole === 'admin') {
+                        if (evt.completed) {
+                            actionButtons += `<button class="btn-action-small" onclick="toggleTaskCompleted(${evt.id})">Desmarcar</button>`;
+                            if (evt.attachment) {
+                                actionButtons += `<button class="btn-action-small" onclick="downloadAttachment('${evt.attachment.name}', '${evt.attachment.data}')" style="border-color:var(--success-color); color:var(--success-color);">Baixar Anexo</button>`;
+                            }
+                        } else {
+                            if (!evt.isRecording) {
+                                actionButtons += `<button class="btn-action-small" onclick="openAttachmentModal(${evt.id})">Concluir</button>`;
+                            }
+                        }
+                    }
+
+                    item.innerHTML = `
+                        ${contentHTML}
+                        <div class="task-actions">
+                            ${actionButtons}
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+
+            document.getElementById('day-view-modal').style.display = 'flex';
+        }
+
+        function closeDayViewModal() {
+            document.getElementById('day-view-modal').style.display = 'none';
+        }
+
+        // Fluxo de Anexos
+        function openAttachmentModal(taskId) {
+            closeDayViewModal();
+            activeCompletingTaskId = taskId;
+            document.getElementById('task-file').value = '';
+            document.getElementById('attachment-modal').style.display = 'flex';
+        }
+
+        function closeAttachmentModal() {
+            document.getElementById('attachment-modal').style.display = 'none';
+            openDayViewModal(selectedMonth, selectedDay);
+        }
+
+        function submitTaskCompletion() {
+            const fileInput = document.getElementById('task-file');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Por favor, selecione um arquivo.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const task = globalTasksList.find(t => t.id === activeCompletingTaskId);
+                if (task) {
+                    task.completed = true;
+                    task.attachment = {
+                        name: file.name,
+                        data: e.target.result 
+                    };
+                    alert("Atividade concluída com entrega de arquivo!");
+                    document.getElementById('attachment-modal').style.display = 'none';
+                    buildYearlyCalendar();
+                    openDayViewModal(selectedMonth, selectedDay);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function downloadAttachment(fileName, base64Data) {
+            const link = document.createElement('a');
+            link.href = base64Data;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function toggleTaskCompleted(taskId) {
+            const task = globalTasksList.find(t => t.id === taskId);
+            if (task) {
+                task.completed = false;
+                task.attachment = null;
+                buildYearlyCalendar();
+                openDayViewModal(selectedMonth, selectedDay);
+            }
+        }
+
+        function openCreateModal() {
+            closeDayViewModal();
+            document.getElementById('modal-title').innerText = `Adicionar em: ${selectedMonth} - Dia ${selectedDay}`;
+            document.getElementById('event-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('event-modal').style.display = 'none';
+            document.getElementById('event-text').value = '';
+            document.getElementById('event-video').value = '';
+            openDayViewModal(selectedMonth, selectedDay); 
+        }
+
+        function toggleInputType() {
+            const type = document.getElementById('event-type').value;
+            document.getElementById('text-input-group').style.display = type === 'text' ? 'block' : 'none';
+            document.getElementById('video-input-group').style.display = type === 'video' ? 'block' : 'none';
+        }
+
+        function submitEvent() {
+            const type = document.getElementById('event-type').value;
+            const text = document.getElementById('event-text').value;
+            const video = document.getElementById('event-video').value;
+            const content = type === 'text' ? text : video;
+
+            if (!content) {
+                alert("Preencha todos os campos.");
+                return;
+            }
+
+            const key = `${selectedMonth}-${selectedDay}`;
+
+            if (currentRole === 'admin') {
+                globalTasksList.push({
+                    id: Date.now(),
+                    dateKey: key,
+                    type: type,
+                    content: content,
+                    color: '#7c3aed',
+                    owner: 'admin',
+                    completed: false
+                });
+                alert("Sucesso!");
+                document.getElementById('event-modal').style.display = 'none';
+                buildYearlyCalendar();
+                openDayViewModal(selectedMonth, selectedDay);
+            } else {
+                // Solicitações customizadas do participante continuam exigindo aprovação
+                const idColor = getColorForUser(userPersonalId);
+                pendingEventRequests.push({
+                    id: Date.now(),
+                    month: selectedMonth,
+                    day: selectedDay,
+                    type: type,
+                    content: content,
+                    color: idColor,
+                    owner: userPersonalId,
+                    targetScope: currentTab 
+                });
+                
+                alert(`Agendamento enviado para aprovação.`);
+                document.getElementById('event-modal').style.display = 'none';
+                openDayViewModal(selectedMonth, selectedDay);
+            }
+        }
+
+        function acceptTaskPrompt(taskName, taskId, isGlobalAdminCreated) {
+            const mesEscolhido = prompt(`Especifique o mês para realizar o conteúdo "${taskName}":`);
+            if (!mesEscolhido) return;
+            const mesValido = meses.find(m => m.name.toLowerCase() === mesEscolhido.trim().toLowerCase());
+
+            if (!mesValido) {
+                alert("Mês incorreto.");
+                return;
+            }
+
+            const diaEscolhido = prompt(`Dia:`);
+            const dayNum = parseInt(diaEscolhido);
+
+            if (isNaN(dayNum) || dayNum < 1 || dayNum > mesValido.days) {
+                alert("Data inconsistente.");
+                return;
+            }
+
+            const idColor = getColorForUser(userPersonalId);
+
+            // SE FOI CRIADO PELO ADMIN, AGENDA E ADICIONA IMEDIATAMENTE (Sem pedir solicitação para aceitar)
+            if (isGlobalAdminCreated) {
+                globalTasksList.push({
+                    id: Date.now(),
+                    dateKey: `${mesValido.name}-${dayNum}`,
+                    type: 'text',
+                    content: taskName,
+                    color: idColor,
+                    owner: userPersonalId,
+                    completed: false
+                });
+
+                // Remove o conteúdo do pool global de todos
+                poolGlobalTasks = poolGlobalTasks.filter(t => t.id !== taskId);
+
+                alert("Conteúdo assumido e adicionado diretamente ao seu calendário pessoal!");
+                buildYearlyCalendar();
+                renderSidebarTasks();
+            } else {
+                // Conteúdos personalizados do usuário ainda vão para aprovação
+                pendingEventRequests.push({
+                    id: Date.now(),
+                    month: mesValido.name,
+                    day: dayNum,
+                    type: 'text',
+                    content: taskName,
+                    color: idColor,
+                    owner: userPersonalId,
+                    targetScope: 'pessoal',
+                    originTaskId: taskId 
+                });
+
+                alert("Solicitação de conteúdo enviada com sucesso para análise!");
+            }
+        }
+
+        function acceptCustomTaskPrompt() {
+            const customTitle = prompt("Título do conteúdo personalizado:");
+            if (customTitle && customTitle.trim() !== "") {
+                acceptTaskPrompt(customTitle, null, false);
+            }
+        }
+
+        // Painel Administrativo
+        function updateBadges() {
+            const totalPendencias = pendingIdRequests.length + pendingEventRequests.length;
+            const badge = document.getElementById('req-badge');
+            if (badge) {
+                if (totalPendencias > 0) {
+                    badge.innerText = totalPendencias;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+
+        function updateRequestsPanel() {
+            const accessContainer = document.getElementById('admin-access-requests');
+            const eventContainer = document.getElementById('admin-event-requests');
+
+            if (pendingIdRequests.length === 0) {
+                accessContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.85rem;">Sem solicitações pendentes.</p>';
+            } else {
+                accessContainer.innerHTML = '';
+                pendingIdRequests.forEach((userId, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'request-card-box';
+                    card.innerHTML = `
+                        <div>
+                            <strong>ID solicitado:</strong> <span style="color: var(--primary-color); font-weight:700;">${userId}</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top:8px;">
+                            <button onclick="approveAccess(${idx})" style="padding: 8px 14px;">Autorizar</button>
+                            <button class="btn-secondary btn-danger" onclick="rejectAccess(${idx})" style="padding: 8px 14px; color:white;">Recusar</button>
+                        </div>
+                    `;
+                    accessContainer.appendChild(card);
+                });
+            }
+
+            if (pendingEventRequests.length === 0) {
+                eventContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.85rem;">Sem solicitações pendentes.</p>';
+            } else {
+                eventContainer.innerHTML = '';
+                pendingEventRequests.forEach((req, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'request-card-box';
+                    
+                    const escopoNome = req.targetScope === 'pessoal' ? 'Calendário Pessoal' : 'Calendário Geral';
+                    const escopoBadge = req.targetScope === 'pessoal' ? '#f59e0b' : '#10b981';
+
+                    card.innerHTML = `
+                        <div>
+                            <strong>ID:</strong> ${req.owner}<br>
+                            <strong>Data:</strong> ${req.month} - Dia ${req.day}<br>
+                            <strong>Escopo:</strong> <span style="color: ${escopoBadge}; font-weight: bold;">${escopoNome}</span><br>
+                            <strong>Conteúdo:</strong> ${req.content}
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top:8px;">
+                            <button onclick="approveEventRequest(${idx})" style="padding: 8px 14px;">Aprovar</button>
+                            <button class="btn-secondary btn-danger" onclick="rejectEventRequest(${idx})" style="padding: 8px 14px; color:white;">Recusar</button>
+                        </div>
+                    `;
+                    eventContainer.appendChild(card);
+                });
+            }
+            updateBadges();
+        }
+
+        function approveAccess(index) {
+            const id = pendingIdRequests[index];
+            approvedIds.add(id);
+            pendingIdRequests.splice(index, 1);
+            
+            unreadCounts[id] = 0;
+
+            updateRequestsPanel();
+            alert("Acesso autorizado!");
+            setupChatChannels();
+        }
+
+        function rejectAccess(index) {
+            pendingIdRequests.splice(index, 1);
+            updateRequestsPanel();
+            alert("Acesso recusado.");
+        }
+
+        function approveEventRequest(index) {
+            const req = pendingEventRequests[index];
+            
+            globalTasksList.push({
+                id: req.id,
+                dateKey: `${req.month}-${req.day}`,
+                type: req.type,
+                content: req.content,
+                color: req.color,
+                owner: req.owner,
+                completed: false
+            });
+
+            if (req.originTaskId) {
+                poolGlobalTasks = poolGlobalTasks.filter(t => t.id !== req.originTaskId);
+            }
+
+            pendingEventRequests.splice(index, 1);
+            updateRequestsPanel();
+            buildYearlyCalendar();
+            renderSidebarTasks();
+            alert("Conteúdo aprovado e adicionado ao calendário!");
+        }
+
+        function rejectEventRequest(index) {
+            pendingEventRequests.splice(index, 1);
+            updateRequestsPanel();
+            alert("Rejeitado.");
+        }
+
+        function updateAdminPanel() {
+            const listDiv = document.getElementById('admin-users-list');
+            listDiv.innerHTML = '';
+
+            const users = Array.from(approvedIds);
+
+            if (users.length === 0) {
+                listDiv.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.85rem;">Sem participantes cadastrados.</p>';
+                return;
+            }
+
+            const allBtn = document.createElement('div');
+            allBtn.className = `user-selection-btn ${adminViewingUser === null ? 'active' : ''}`;
+            allBtn.innerText = "Ver Calendário Geral (Todos)";
+            allBtn.onclick = () => {
+                adminViewingUser = null;
+                updateAdminPanel();
+                buildYearlyCalendar();
+            };
+            listDiv.appendChild(allBtn);
+
+            users.forEach(userId => {
+                const btn = document.createElement('div');
+                btn.className = `user-selection-btn ${adminViewingUser === userId ? 'active' : ''}`;
+                
+                const idColor = getColorForUser(userId);
+                btn.style.borderLeft = `4px solid ${idColor}`;
+                btn.innerText = `${userId}`;
+                
+                btn.onclick = () => {
+                    adminViewingUser = userId;
+                    updateAdminPanel();
+                    buildYearlyCalendar();
+                };
+                listDiv.appendChild(btn);
+            });
+        }
+
+        // LÓGICA DO SISTEMA DE CHAT & NOTIFICAÇÕES (PROFISSIONAL)
+        function toggleChatBox() {
+            const chatBox = document.getElementById('chat-box');
+            if (chatBox.style.display === 'none' || chatBox.style.display === '') {
+                chatBox.style.display = 'flex';
+                unreadCounts[activeChatChannel] = 0;
+                setupChatChannels();
+                renderChatMessages();
+                updateChatGlobalBadge();
+            } else {
+                chatBox.style.display = 'none';
+            }
+        }
+
+        // Injeção de canais no chat
+        function setupChatChannels() {
+            const channelsBar = document.getElementById('chat-channels-bar');
+            channelsBar.innerHTML = '';
+
+            if (currentRole === 'admin') {
+                const generalTab = document.createElement('div');
+                generalTab.className = `channel-tab ${activeChatChannel === 'todos' ? 'active' : ''}`;
+                generalTab.innerText = "Geral (Todos)";
+                
+                const unreadGeneral = unreadCounts['todos'] || 0;
+                if (unreadGeneral > 0 && activeChatChannel !== 'todos') {
+                    generalTab.innerHTML += `<span class="channel-unread-dot"></span>`;
+                }
+                generalTab.onclick = () => switchChatChannel('todos');
+                channelsBar.appendChild(generalTab);
+
+                approvedIds.forEach(userId => {
+                    const tab = document.createElement('div');
+                    tab.className = `channel-tab ${activeChatChannel === userId ? 'active' : ''}`;
+                    tab.innerText = `${userId}`;
+
+                    const unreadPriv = unreadCounts[userId] || 0;
+                    if (unreadPriv > 0 && activeChatChannel !== userId) {
+                        tab.innerHTML += `<span class="channel-unread-dot"></span>`;
+                    }
+                    tab.onclick = () => switchChatChannel(userId);
+                    channelsBar.appendChild(tab);
+                });
+            } else {
+                const generalTab = document.createElement('div');
+                generalTab.className = `channel-tab ${activeChatChannel === 'todos' ? 'active' : ''}`;
+                generalTab.innerText = "Geral (Todos)";
+                
+                const unreadGeneral = unreadCounts['todos'] || 0;
+                if (unreadGeneral > 0 && activeChatChannel !== 'todos') {
+                    generalTab.innerHTML += `<span class="channel-unread-dot"></span>`;
+                }
+                generalTab.onclick = () => switchChatChannel('todos');
+                channelsBar.appendChild(generalTab);
+
+                const adminTab = document.createElement('div');
+                adminTab.className = `channel-tab ${activeChatChannel === userPersonalId ? 'active' : ''}`;
+                adminTab.innerText = "Privado (Admin)";
+
+                const unreadPriv = unreadCounts[userPersonalId] || 0;
+                if (unreadPriv > 0 && activeChatChannel !== userPersonalId) {
+                    adminTab.innerHTML += `<span class="channel-unread-dot"></span>`;
+                }
+                adminTab.onclick = () => switchChatChannel(userPersonalId);
+                channelsBar.appendChild(adminTab);
+            }
+        }
+
+        function switchChatChannel(channel) {
+            activeChatChannel = channel;
+            unreadCounts[channel] = 0; 
+            setupChatChannels();
+            renderChatMessages();
+            updateChatGlobalBadge();
+        }
+
+        function renderChatMessages() {
+            const msgsContainer = document.getElementById('chat-messages');
+            msgsContainer.innerHTML = '';
+
+            let filteredMsgs = [];
+            if (activeChatChannel === 'todos') {
+                filteredMsgs = chatMessagesList.filter(m => m.channel === 'todos');
+            } else {
+                filteredMsgs = chatMessagesList.filter(m => m.channel === activeChatChannel);
+            }
+
+            if (filteredMsgs.length === 0) {
+                msgsContainer.innerHTML = '<p style="color:var(--text-secondary); text-align:center; font-size:0.75rem; margin: auto 0;">Inicie a conversa.</p>';
+            } else {
+                filteredMsgs.forEach(m => {
+                    const bubble = document.createElement('div');
+                    const isSelf = m.sender === userPersonalId;
+                    
+                    bubble.className = `chat-bubble ${isSelf ? 'sent' : 'received'}`;
+                    
+                    bubble.innerHTML = `
+                        <span class="chat-bubble-meta">${m.sender}</span>
+                        ${m.text}
+                    `;
+                    msgsContainer.appendChild(bubble);
+                });
+            }
+            msgsContainer.scrollTop = msgsContainer.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-message-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const senderId = userPersonalId;
+            const channel = activeChatChannel;
+
+            chatMessagesList.push({
+                channel: channel,
+                sender: senderId,
+                text: text,
+                time: Date.now()
+            });
+
+            input.value = '';
+            renderChatMessages();
+
+            triggerMockNotification(channel, senderId);
+        }
+
+        function triggerMockNotification(channel, sender) {
+            const chatBoxVisible = document.getElementById('chat-box').style.display === 'flex';
+
+            if (channel === 'todos') {
+                if (!chatBoxVisible || activeChatChannel !== 'todos') {
+                    unreadCounts['todos'] = (unreadCounts['todos'] || 0) + 1;
+                }
+            } else {
+                if (sender !== 'admin') {
+                    if (!chatBoxVisible || activeChatChannel !== sender || currentRole !== 'admin') {
+                        unreadCounts[sender] = (unreadCounts[sender] || 0) + 1;
+                    }
+                } else {
+                    if (!chatBoxVisible || activeChatChannel !== channel || userPersonalId !== channel) {
+                        unreadCounts[channel] = (unreadCounts[channel] || 0) + 1;
+                    }
+                }
+            }
+
+            setupChatChannels();
+            updateChatGlobalBadge();
+        }
+
+        function updateChatGlobalBadge() {
+            const globalBadge = document.getElementById('chat-unread-count');
+            const chatBoxVisible = document.getElementById('chat-box').style.display === 'flex';
+            
+            let totalUnread = 0;
+            for (let ch in unreadCounts) {
+                if (!chatBoxVisible || ch !== activeChatChannel) {
+                    totalUnread += unreadCounts[ch];
+                }
+            }
+
+            if (totalUnread > 0) {
+                globalBadge.innerText = totalUnread;
+                globalBadge.style.display = 'flex';
+            } else {
+                globalBadge.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
